@@ -35,9 +35,10 @@ def ocr_function(base,og):
             if d['text'][i] == "THAKKAR" or d['text'][i] == "VIRAJ":
                 (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
                 ocr_img = cv2.rectangle(og, (x, y), (x + w, y + h), (0, 0, 0), -1)
-            else:
-                (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
-                ocr_img = cv2.rectangle(temp, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
+            ocr_img = cv2.rectangle(temp, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
     cv2.imshow('Processed',temp)
     return(text,og)
 
@@ -104,7 +105,7 @@ def warp_function(coor,img):
     warped = cv2.warpPerspective(img, matrix, (500,600))            
     cv2.imshow("image",warped)
     # cv2.imwrite('Warped.jpg',warped)
-    scan(warped)
+    # scan(warped)
     
     global flag
     flag = 1

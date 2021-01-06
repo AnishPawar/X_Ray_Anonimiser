@@ -31,7 +31,7 @@ text_box = tk.Frame(frame,bg="#FDFFD6")
 text_box.place(relwidth=0.6,relheight=0.6,relx=0.2,rely=0.2)
 
 # Button Click Definitions
-def open_btn_clicked():
+def open_btn_clicked(): 
     global fname,img_memory
     filename= filedialog.askopenfilename(initialdir="/Users/anishpawar/Robocon/Robocon_Anish/Matlab_IP/IP/Learning",title = "Select Image",filetypes=(("JPEG","*.jpg"),("PNG","*.png"),("all files","*.*")))
     # Name Pre-Processing 
