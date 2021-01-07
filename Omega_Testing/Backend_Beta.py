@@ -43,14 +43,18 @@ def NLP(text):
 
     for i in text:
         i = i.strip()
+        
         a = i.replace('\n','')
-        if len(i) > 2:
-            new.append(a.capitalize())
+        a2 = "".join(re.findall("[a-zA-Z]+", a))
 
+        if len(i) > 2:
+            new.append(a2.capitalize())
+
+    # print(new)
     processed = " ".join(new)
 
     ne_tree = pos_tag(word_tokenize(processed))
-
+    print(ne_tree)
     names = []
 
     # Checking P-Noun Followed by P-Noun
@@ -58,13 +62,13 @@ def NLP(text):
 
         if ((ne_tree[c-1][1] == "NNP") and (ne_tree[c][1] == "NNP")) or ((ne_tree[c-1][1] == "NNP") and (ne_tree[c][1] == "NN")) or ((ne_tree[c-1][1] == "NN") and (ne_tree[c][1] == "NNP")):
             
-            word1 = "".join(re.findall("[a-zA-Z]+", ne_tree[c-1][0]))
-            word2 = "".join(re.findall("[a-zA-Z]+", ne_tree[c][0]))
-
-            names.append(word1)
-            names.append(word2)
+            # word1 = "".join(re.findall("[a-zA-Z]+", ne_tree[c-1][0]))
+            # word2 = "".join(re.findall("[a-zA-Z]+", ne_tree[c][0]))
+            
+            names.append(ne_tree[c-1][0])
+            names.append(ne_tree[c][0])
     
-    # print(ne_tree)
+    # print(names)
 
     # If list is empty, return the original text
     if not names :
@@ -82,7 +86,7 @@ def NLP(text):
 
 def fuzzy_matching(text):
     global new_text
-    # print(text)
+    print(text)
     #Declarations
     Fname_ds = []
     Lname_ds = []

@@ -37,13 +37,13 @@ frame = tk.Frame(root,bg="white")
 frame.place(relwidth=1,relheight=0.1,relx=0,rely=0)
 
 plot_frame = tk.Frame(root,bg="#D0E69E")
-plot_frame.place(relwidth=0.65,relheight=0.8,relx=0.3,rely=0.15)
-
-
+plot_frame.place(relwidth=0.65,relheight=0.8,relx=0.3,rely=0.15,bordermode='inside')
 
 # Image Display
 image = plt.imread('Ano.png')
 fig = plt.figure(dpi=160)
+
+plt.subplots_adjust(left=0.0, bottom=0.0, right=1.0, top=1.0, wspace=0.2, hspace=0.2)
 
 im = plt.imshow(image,interpolation = 'nearest',aspect='equal') 
 ax = plt.gca()
@@ -54,8 +54,8 @@ ax.set_yticklabels([])
 canvas1 = FigureCanvasTkAgg(fig, master=plot_frame)
 canvas1.draw()
 
-toolbar = NavigationToolbar2Tk(canvas1, plot_frame)
-toolbar.update()
+# toolbar = NavigationToolbar2Tk(canvas1, plot_frame)
+# toolbar.update()
 
 canvas1.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1) 
 
@@ -82,7 +82,7 @@ def open_btn_clicked():
     histogram = temp_img.ravel()
     if np.mean(histogram) <=120:
         temp_img = cv2.bitwise_not(temp_img)
-    img_memory.append(temp_img)
+    img_memory.append(og_img)
     plot_new(og_img)
     
 def fliph_btn_clicked():
@@ -90,7 +90,7 @@ def fliph_btn_clicked():
     global temp_img,img_memory,og_img
     temp_img = cv2.flip(temp_img,1)
     og_img = cv2.flip(og_img,1)
-    img_memory.append(temp_img)
+    img_memory.append(og_img)
     plot_new(og_img)
 
 def flipv_btn_clicked():
@@ -98,7 +98,7 @@ def flipv_btn_clicked():
     global temp_img,img_memory,og_img
     temp_img = cv2.flip(temp_img,0)
     og_img = cv2.flip(og_img,0)
-    img_memory.append(temp_img)
+    img_memory.append(og_img)
     plot_new(og_img)
 
 def ocr_btn_clicked():
@@ -113,6 +113,21 @@ def mcrop_btn_clicked():
     image_parser(temp_img)
     cv2.imshow('Processed',temp_img)
     cv2.setMouseCallback('Processed',mouse)
+
+def rotate_r_btn_clicked(): 
+    global temp_img,img_memory,og_img
+    temp_img = cv2.rotate(temp_img,cv2.ROTATE_90_CLOCKWISE)
+    og_img = cv2.rotate(og_img,cv2.ROTATE_90_CLOCKWISE)
+    img_memory.append(og_img)
+    plot_new(og_img)
+
+def rotate_l_btn_clicked():
+    global temp_img,img_memory,og_img
+    temp_img = cv2.rotate(temp_img,cv2.ROTATE_90_COUNTERCLOCKWISE)
+    og_img = cv2.rotate(og_img,cv2.ROTATE_90_COUNTERCLOCKWISE)
+    img_memory.append(og_img)
+    plot_new(og_img)
+
 
 def destroy_btn_clicked():
     cv2.destroyAllWindows()
@@ -129,6 +144,13 @@ def undo_btn_clicked():
     temp_img = img_memory[-2]
     img_memory.pop()
     plot_new(temp_img)
+
+def show_credits():
+    cred_frame = tk.Frame(canvas,bg="white")
+    cred_frame.place(relwidth=0.22,relheight=0.25,relx=0.025,rely=0.7)
+
+    label = tk.Label(cred_frame,text='Boom!!',fg= 'blue',bg='white',font =('Arial',25)) 
+    label.place(relx=0.3,rely=0.2)
 
 #Labels
 
@@ -149,36 +171,42 @@ label_3.place(relx=0.025,rely=0.35)
 
 # Button Definitions
 
-open_btn = tk.Button(canvas,text="Open Image",padx=2,pady=10,fg="black",command=open_btn_clicked)
+open_btn = tk.Button(canvas,text="Open Image",height=2,width=10,fg="black",command=open_btn_clicked)
 open_btn.place(relx=0.025,rely=0.16)
 
-auto_crop_btn = tk.Button(canvas,text="Auto Crop",padx=7,pady=10,fg="black",command = auto_crop_btn_clicked)
+auto_crop_btn = tk.Button(canvas,text="Auto Crop",height=2,width=10,fg="black",command = auto_crop_btn_clicked)
 auto_crop_btn.place(relx=0.025,rely=0.275)
 
-mcrop_btn = tk.Button(canvas,text="Manual Crop",padx=2,pady=10,bg="#263D42",fg="black",command=mcrop_btn_clicked)
+mcrop_btn = tk.Button(canvas,text="Manual Crop",height=2,width=10,bg="#263D42",fg="black",command=mcrop_btn_clicked)
 mcrop_btn.place(relx=0.15,rely=0.275)
 
 
-FlipH_btn = tk.Button(canvas,text="Flip_H",padx=20,pady=10,fg="black",command= fliph_btn_clicked)
+FlipH_btn = tk.Button(canvas,text="Flip_H",height=2,width=10,fg="black",command= fliph_btn_clicked)
 FlipH_btn.place(relx=0.025,rely=0.4)
 
-FlipV_btn = tk.Button(canvas,text="Flip_V",padx=22,pady=10,fg="black",command= flipv_btn_clicked)
+FlipV_btn = tk.Button(canvas,text="Flip_V",height=2,width=10,fg="black",command= flipv_btn_clicked)
 FlipV_btn.place(relx=0.15,rely=0.4)
 
+rotate_r = tk.Button(canvas,text="Rotate_R",height=2,width=10,fg="black",command= rotate_r_btn_clicked)
+rotate_r.place(relx=0.025,rely=0.475)
 
-undo_btn = tk.Button(canvas,text="Undo",padx=22,pady=10,fg="black",command= undo_btn_clicked)
-undo_btn.place(relx=0.025,rely=0.475)
+rotate_l = tk.Button(canvas,text="Rotate_L",height=2,width=10,bg="#263D42",fg="black",command=rotate_l_btn_clicked)
+rotate_l.place(relx=0.15,rely=0.475)
 
-ocr_btn = tk.Button(canvas,text="Anomise",padx=13,pady=10,bg="#263D42",fg="black",command=ocr_btn_clicked)
-ocr_btn.place(relx=0.15,rely=0.475)
 
-save_img_btn = tk.Button(canvas,text=" Save \n Image",padx=18,pady=10,bg="#263D42",fg="green",command=save_img_btn_clicked)
-save_img_btn.place(relx=0.025,rely=0.575)
+undo_btn = tk.Button(canvas,text="Undo",height=2,width=10,fg="black",command= undo_btn_clicked)
+undo_btn.place(relx=0.025,rely=0.55)
 
-destroy_btn = tk.Button(canvas,text="Close \n Windows",padx=9,pady=10,bg="#263D42",fg="red",command=destroy_btn_clicked)
-destroy_btn.place(relx=0.15,rely=0.575)
+ocr_btn = tk.Button(canvas,text="Anomise",height=2,width=10,bg="#263D42",fg="black",command=ocr_btn_clicked)
+ocr_btn.place(relx=0.15,rely=0.55)
 
-plot_button = Button(master = canvas,height = 2,width = 8,padx = 4,text = "Display") 
+save_img_btn = tk.Button(canvas,text=" Save \n Image",height=2,width=10,bg="#263D42",fg="green",command=save_img_btn_clicked)
+save_img_btn.place(relx=0.025,rely=0.625)
+
+destroy_btn = tk.Button(canvas,text="Close \n Windows",height=2,width=10,bg="#263D42",fg="red",command=destroy_btn_clicked)
+destroy_btn.place(relx=0.15,rely=0.625)
+
+plot_button = Button(master = canvas,height=2,width=10,text = "Credits",command=show_credits) 
 plot_button.place(relx=0.15,rely=0.16) 
 
 
