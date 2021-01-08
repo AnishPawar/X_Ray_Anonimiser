@@ -20,6 +20,9 @@ final_coor = []
 temp_list = []
 new_text = []
 image = []
+
+# blur_stat = 0
+
 # scanned = np.zeros((), np.uint8)
 
 flag = 0 
@@ -28,11 +31,20 @@ def image_parser(img):
     global image
     image = img
 
-def blur_function(img):
-    blur_base = img 
-    blur = cv2.GaussianBlur(blur_base,(25,25),0)
-    cv2.imshow('image',blur)
+def blur_correction(img):
+    # Checking for Blur
+    var = cv2.Laplacian(img, cv2.CV_64F).var()    
     
+    print(var)
+
+    if 30 < var < 95:
+        
+        print("Going In....")
+        # Removing Lower Intensities 
+        ret,img = cv2.threshold(img,140,255,cv2.THRESH_BINARY_INV)
+
+    return img    
+        
 
 def NLP(text):
     global new_text,temp_list
@@ -54,7 +66,7 @@ def NLP(text):
     processed = " ".join(new)
 
     ne_tree = pos_tag(word_tokenize(processed))
-    print(ne_tree)
+    # print(ne_tree)
     names = []
 
     # Checking P-Noun Followed by P-Noun
@@ -79,18 +91,23 @@ def NLP(text):
     
     
     else:
-        temp_list.append(set(names))
+        temp_list = names
         return set(names)
 
 
 
 def fuzzy_matching(text):
     global new_text
-    print(text)
+    # print(text)
     #Declarations
+
+    # if blur_stat == 0:
+
     Fname_ds = []
     Lname_ds = []
     body_part = ['abdomen', 'barium', 'bone', 'chest', 'dental', 'extremity', 'hand', 'joint', 'neck', 'pelvis', 'sinus', 'skull', 'spine', 'thoracic']
+
+    print(text)
 
     #Opening CSV files
     with open('Indian_Names.csv', newline='') as f:
@@ -121,8 +138,8 @@ def fuzzy_matching(text):
         if fz.ratio(text, given) > 60:
             # print(text, given, 2)
             new_text.append(text)
-    
-    # return ''
+
+    # blur_stat = 0
 
 def ocr_function(base,og):
     global new_text,temp_list
@@ -134,19 +151,19 @@ def ocr_function(base,og):
 
     d = pytesseract.image_to_data(base,output_type=Output.DICT)
 
-    # Text Bounding Boxes
-
     processed_text = NLP(text)
 
     for name in processed_text:
         fuzzy_matching(name)
     
     
-    new_text = set(new_text)
-    print(new_text)
+    # new_text = new_text
+    # print(new_text)
 
     if not new_text:
         new_text = temp_list
+        
+    # print(new_text)    
 
     n_boxes = len(d['text'])
     for i in range(n_boxes):
@@ -157,7 +174,7 @@ def ocr_function(base,og):
             if  comp == c.lower():
 
                 (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
-                ocr_img = cv2.rectangle(og, (x, y), (x + w, y + h), (0, 255, 0), -1)
+                ocr_img = cv2.rectangle(og, (x, y), (x + w, y + h), (0, 0, 0), -1)
 
 
     # cv2.imshow('Processed',temp)

@@ -5,7 +5,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from numpy.core.records import fromarrays
 
-from Backend_Beta import mouse,blur_function,ocr_function,auto_crop,image_parser
+from Backend_Beta import mouse,ocr_function,auto_crop,image_parser,blur_correction
 
 import cv2
 import numpy as np
@@ -13,8 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from matplotlib.figure import Figure 
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,  
-NavigationToolbar2Tk) 
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,  NavigationToolbar2Tk) 
 
 # Global Variables
 og_img = np.zeros((), np.uint8)
@@ -47,7 +46,6 @@ plt.subplots_adjust(left=0.0, bottom=0.0, right=1.0, top=1.0, wspace=0.2, hspace
 
 im = plt.imshow(image,interpolation = 'nearest',aspect='equal') 
 ax = plt.gca()
-# plt.axis("equal")
 ax.set_xticklabels([]) 
 ax.set_yticklabels([]) 
 
@@ -76,8 +74,10 @@ def open_btn_clicked():
 
     global og_img,temp_img
     og_img = cv2.imread(filename)
-    temp_img = og_img.copy()
-    img_memory.append(temp_img)
+
+    temp_img = cv2.cvtColor(og_img,cv2.COLOR_BGR2GRAY)
+
+    temp_img = blur_correction(og_img)
 
     histogram = temp_img.ravel()
     if np.mean(histogram) <=120:
@@ -154,7 +154,7 @@ def show_credits():
 
 #Labels
 
-label = tk.Label(frame,text='X-Ray Anomiser',fg= 'blue',bg='white',font =('Arial',25)) 
+label = tk.Label(frame,text='X-Ray Anonimiser',fg= 'blue',bg='white',font =('Arial',25)) 
 label.place(relx=0.4,rely=0.2)
 
 label_1 = tk.Label(canvas,text='Image Loading:',fg= 'blue',bg='#D0E69E',font =('Arial',18)) 
@@ -197,7 +197,7 @@ rotate_l.place(relx=0.15,rely=0.475)
 undo_btn = tk.Button(canvas,text="Undo",height=2,width=10,fg="black",command= undo_btn_clicked)
 undo_btn.place(relx=0.025,rely=0.55)
 
-ocr_btn = tk.Button(canvas,text="Anomise",height=2,width=10,bg="#263D42",fg="black",command=ocr_btn_clicked)
+ocr_btn = tk.Button(canvas,text="Anonimise",height=2,width=10,bg="#263D42",fg="black",command=ocr_btn_clicked)
 ocr_btn.place(relx=0.15,rely=0.55)
 
 save_img_btn = tk.Button(canvas,text=" Save \n Image",height=2,width=10,bg="#263D42",fg="green",command=save_img_btn_clicked)
