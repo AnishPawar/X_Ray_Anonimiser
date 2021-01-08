@@ -71,6 +71,8 @@ def open_btn_clicked():
     # Name Pre-Processing 
     names = filename.split('/')
     fname = names[-1].split('.')
+    
+    img_memory = []
 
     global og_img,temp_img
     og_img = cv2.imread(filename)
@@ -138,6 +140,9 @@ def save_img_btn_clicked():
 def auto_crop_btn_clicked():
     global temp_img,img_memory
     temp_img = auto_crop(temp_img)
+
+    img_memory.append(temp_img)
+
     plot_new(temp_img)
 
 def undo_btn_clicked():

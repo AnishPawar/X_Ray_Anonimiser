@@ -21,10 +21,6 @@ temp_list = []
 new_text = []
 image = []
 
-# blur_stat = 0
-
-# scanned = np.zeros((), np.uint8)
-
 flag = 0 
 
 def image_parser(img):
@@ -33,11 +29,15 @@ def image_parser(img):
 
 def blur_correction(img):
     # Checking for Blur
-    var = cv2.Laplacian(img, cv2.CV_64F).var()    
+    
+    aspect_ratio = img.shape[1]/img.shape[0]
+    height = int(500/aspect_ratio)
+    img_copy = cv2.resize(img,(500,height))
+    var = cv2.Laplacian(img_copy, cv2.CV_64F).var()    
     
     print(var)
 
-    if 30 < var < 95:
+    if var < 500:
         
         print("Going In....")
         # Removing Lower Intensities 
@@ -74,14 +74,9 @@ def NLP(text):
 
         if ((ne_tree[c-1][1] == "NNP") and (ne_tree[c][1] == "NNP")) or ((ne_tree[c-1][1] == "NNP") and (ne_tree[c][1] == "NN")) or ((ne_tree[c-1][1] == "NN") and (ne_tree[c][1] == "NNP")):
             
-            # word1 = "".join(re.findall("[a-zA-Z]+", ne_tree[c-1][0]))
-            # word2 = "".join(re.findall("[a-zA-Z]+", ne_tree[c][0]))
-            
             names.append(ne_tree[c-1][0])
             names.append(ne_tree[c][0])
     
-    # print(names)
-
     # If list is empty, return the original text
     if not names :
         for c in ne_tree:
@@ -93,7 +88,6 @@ def NLP(text):
     else:
         temp_list = names
         return set(names)
-
 
 
 def fuzzy_matching(text):
@@ -156,9 +150,6 @@ def ocr_function(base,og):
     for name in processed_text:
         fuzzy_matching(name)
     
-    
-    # new_text = new_text
-    # print(new_text)
 
     if not new_text:
         new_text = temp_list
@@ -241,8 +232,8 @@ def warp_function(coor,img):
     matrix = cv2.getPerspectiveTransform(pts1,pts2)
     # global warped
     warped = cv2.warpPerspective(img, matrix, (500,600))            
+    cv2.imshow("Warped",warped)
     return warped
-
 
     
 def auto_crop(img):
