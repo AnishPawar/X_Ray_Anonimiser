@@ -5,7 +5,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from numpy.core.records import fromarrays
 
-from Backend_Beta import mouse,ocr_function,auto_crop,image_parser,blur_correction
+from Backend_Beta import ocr_function,auto_crop,image_parser,blur_correction
 
 import cv2
 import numpy as np
@@ -23,8 +23,10 @@ text = ''
 fname = []
 
 img_memory = []
-
 fig = []
+
+counter = 0
+final_coor = []
 
 # GUI Main loop
 root = tk.Tk()
@@ -111,10 +113,77 @@ def ocr_btn_clicked():
     plot_new(og_img)
 
 def mcrop_btn_clicked():
-    global img_memory
-    image_parser(temp_img)
-    cv2.imshow('Processed',temp_img)
+    global temp_img,og_img
+    # image_parser(temp_img)
+    cv2.imshow('Processed',og_img)
     cv2.setMouseCallback('Processed',mouse)
+
+def mouse(event,x,y,z,w):
+    
+    global counter,final_coor,og_img 
+    marked = og_img.copy()
+    if event == cv2.EVENT_LBUTTONDOWN:
+        counter = counter+1
+
+        if counter == 1:
+            pos1=(y,x)
+            pos1_flip = (x,y)
+
+            # final_coor.append(pos1_flip)
+            final_coor.insert(0,pos1_flip)
+            
+            
+            cv2.circle(marked,pos1_flip,60,(0,255,0),-1)
+            cv2.imshow('Processed',marked)
+
+        if counter == 2:
+            pos2=(y,x)
+            pos2_flip = (x,y)
+            
+            # final_coor.append(pos2_flip)
+            final_coor.insert(1,pos2_flip)            
+            
+            cv2.circle(marked,pos2_flip,60,(0,255,0),-1)
+            cv2.imshow('Processed',marked)
+
+        if counter == 3:
+            pos3=(y,x)
+            pos3_flip = (x,y)
+            
+            # final_coor.append(pos3_flip)
+            
+            final_coor.insert(3,pos3_flip)
+
+            cv2.circle(marked,pos3_flip,60,(0,255,0),-1)
+            cv2.imshow('Processed',marked)
+
+        if counter == 4:
+            pos4=(y,x)      
+            pos4_flip = (x,y)
+            
+            # final_coor.append(pos4_flip)
+
+            final_coor.insert(2,pos4_flip)
+            
+            cv2.circle(marked,pos4_flip,60,(0,255,0),-1)
+            print(final_coor)
+            
+            warp_function(final_coor,og_img)
+            
+
+def warp_function(coor,img):
+    global og_img,temp_img,img_memory
+    pts1 = np.float32(coor)
+    pts2 = np.float32([(0, 0), (500, 0), (0, 600), (500, 600)])
+
+    matrix = cv2.getPerspectiveTransform(pts1,pts2)
+    # global warped
+    warped = cv2.warpPerspective(img, matrix, (500,600))            
+    cv2.destroyAllWindows()
+    og_img = warped
+    temp_img = og_img.copy()
+    img_memory.append(og_img)
+    plot_new(og_img)
 
 def rotate_r_btn_clicked(): 
     global temp_img,img_memory,og_img
@@ -138,12 +207,12 @@ def save_img_btn_clicked():
     cv2.imwrite("{}_Processed.{}".format(fname[0],fname[1]),og_img)
 
 def auto_crop_btn_clicked():
-    global temp_img,img_memory
-    temp_img = auto_crop(temp_img)
+    global og_img,temp_img,img_memory
+    og_img = auto_crop(og_img)
+    temp_img = og_img.copy()
+    img_memory.append(og_img)
 
-    img_memory.append(temp_img)
-
-    plot_new(temp_img)
+    plot_new(og_img)
 
 def undo_btn_clicked():
     temp_img = img_memory[-2]
