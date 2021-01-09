@@ -23,10 +23,13 @@ text = ''
 fname = []
 
 img_memory = []
+
 fig = []
 
 counter = 0
 final_coor = []
+
+file_list = []
 
 # GUI Main loop
 root = tk.Tk()
@@ -66,17 +69,29 @@ def plot_new(img):
 
 # Button Click Definitions
 def open_btn_clicked(): 
-    global fig
+    global fig,file_list
     # plt.close(fig)
-    global fname,img_memory
-    filename= filedialog.askopenfilename(initialdir="/Users/anishpawar/Robocon/Robocon_Anish/Matlab_IP/IP/Learning",title = "Select Image",filetypes=(("JPEG","*.jpg"),("PNG","*.png"),("all files","*.*")))
+
+    file_list = list(filedialog.askopenfilenames(initialdir="/Users/anishpawar/Robocon/Robocon_Anish/Matlab_IP/IP/Learning",title = "Select Image",filetypes=(("JPEG","*.jpg"),("PNG","*.png"),("all files","*.*"))))
     # Name Pre-Processing 
+    load_img(file_list)
+
+def load_img(file_list):
+    global img_memory,og_img,temp_img,fname
+    img_memory = []
+
+    print(file_list)
+
+
+    filename = file_list[0]
+
     names = filename.split('/')
     fname = names[-1].split('.')
     
-    img_memory = []
+    
+    file_list.pop(0)
 
-    global og_img,temp_img
+
     og_img = cv2.imread(filename)
 
     temp_img = cv2.cvtColor(og_img,cv2.COLOR_BGR2GRAY)
@@ -107,9 +122,12 @@ def flipv_btn_clicked():
 
 def ocr_btn_clicked():
     plt.close()
-    global text,og_img
+    global text,og_img,img_memory,temp_img
     print("Working.... \n")
     text,og_img = ocr_function(temp_img,og_img)
+
+    temp_img = og_img.copy()
+    img_memory.append(og_img)
     plot_new(og_img)
 
 def mcrop_btn_clicked():
@@ -204,7 +222,13 @@ def destroy_btn_clicked():
     cv2.destroyAllWindows()
 
 def save_img_btn_clicked():
+    global file_list,fname,og_img
+    print(fname)
     cv2.imwrite("{}_Processed.{}".format(fname[0],fname[1]),og_img)
+
+    if file_list:
+        load_img(file_list)
+
 
 def auto_crop_btn_clicked():
     global og_img,temp_img,img_memory
@@ -221,10 +245,10 @@ def undo_btn_clicked():
 
 def show_credits():
     cred_frame = tk.Frame(canvas,bg="white")
-    cred_frame.place(relwidth=0.22,relheight=0.25,relx=0.025,rely=0.7)
+    cred_frame.place(relwidth=0.22,relheight=0.1,relx=0.025,rely=0.85)
 
-    label = tk.Label(cred_frame,text='Boom!!',fg= 'blue',bg='white',font =('Arial',25)) 
-    label.place(relx=0.3,rely=0.2)
+    label = tk.Label(cred_frame,text='Anish Pawar SY EXTC\nChaitanya Bandiwdekar SY IT',fg= 'black',bg='white',font =('Arial',16),justify='left') 
+    label.place(relx=0.0,rely=0.2)
 
 #Labels
 
@@ -280,8 +304,8 @@ save_img_btn.place(relx=0.025,rely=0.625)
 destroy_btn = tk.Button(canvas,text="Close \n Windows",height=2,width=10,bg="#263D42",fg="red",command=destroy_btn_clicked)
 destroy_btn.place(relx=0.15,rely=0.625)
 
-plot_button = Button(master = canvas,height=2,width=10,text = "Credits",command=show_credits) 
-plot_button.place(relx=0.15,rely=0.16) 
+credit_button = Button(master = canvas,height=2,width=10,text = "Credits",command=show_credits) 
+credit_button.place(relx=0.15,rely=0.16) 
 
 
 root.mainloop()
