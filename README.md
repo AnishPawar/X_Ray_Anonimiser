@@ -1,15 +1,12 @@
-<h1 align="center">:ambulance: Green Route :hospital:</h1>
+<h1 align="center">:hospital: X Ray Anonymiser :hospital:</h1>
 
-<div align= "center">
 
-<img src="Screenshots\Green_Route_Icon.png" width=250px height=274px/>
-<br>
 
-[![](https://img.shields.io/badge/Made_with-Flutter-red?style=for-the-badge&logo=flutter)](https://flutter.dev/)
-[![](https://img.shields.io/badge/Made_with-Google%20Maps%20Platform-red?style=for-the-badge&logo=google-maps)](https://developers.google.com/maps/documentation)
-[![](https://img.shields.io/badge/Made_with-Firebase-red?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
-[![](https://img.shields.io/badge/Made_with-dart-red?style=for-the-badge&logo=dart)](https://dart.dev/)
-[![](https://img.shields.io/badge/Made_with-Node.js-red?style=for-the-badge&logo=node.js)](https://nodejs.org/en/)
+
+[![](https://img.shields.io/badge/Made_with-Python-green?style=for-the-badge&logo=python)](https://www.python.org)
+[![](https://img.shields.io/badge/Made_with-nltk-green?style=for-the-badge&logo=nltk)](https://www.nltk.org/#)
+[![](https://img.shields.io/badge/Made_with-tesseract-green?style=for-the-badge&logo=tesseract)](https://opensource.google/projects/tesseract)
+[![](https://img.shields.io/badge/Made_with-Opencv-green?style=for-the-badge&logo=opencv)](https://opencv.org)
 
 <br>
 
@@ -33,7 +30,9 @@ Healthcare industry has seen a massive influx of data from a plethora of digital
 The GUI is designed using matplotlib integrated with tkinter module. The image window is a matplotlib plot, whereas the buttons are made using tkinter.
 
 <div align="center">
-<img src="Assets\GUI.png" width=672px height=300px/> 
+<img src="Assets\GUI.png" width=672px height=450px/> 
+<br>
+Figure 1: Tkinter GUI window
 <br>
 </div>
 
@@ -46,7 +45,9 @@ Every image is <b>resized</b> to a fixed size (by height) <b>maintaining the asp
 If the variance is less than a predetermined threshold (<b>500 units</b>), the image is considered to be blurry.
 
 <div align="center">
-<img src="Assets\Blur_Correction.png" width=672px height=400px/> 
+<img src="Assets\Blur_Correction.png" width=672px height=450px/> 
+<br>
+Figure 2: Laplacian Variance of different image samples
 <br>
 </div>
 <h3>Blur Correction</h3>
@@ -54,7 +55,9 @@ Blur images have lower intensity pixels surrounding higher intensity pixels
 So a <b>threshold</b> (binary inverse) is applied on the images, with a threshold pixel value of 140. This causes all pixel values below 140 to be converted to 255, and all values above 140 to be converted to 0. This improves the clarity of the text since the lower intensity pixels
 are thresholded.
 <div align="center">
-<img src="Assets\Blur_Thresh.png" width=672px height=200px/> 
+<img src="Assets\Blur_Thresh.png" width=672px height=300px/> 
+<br>
+Figure 3: Effect of blur correction
 <br>
 </div>
 <h3>Inversion of Images</h3>
@@ -84,7 +87,9 @@ So, in our program, after the image is pre-processed, it is passed to the OCR fu
 Tesseract then works on the image (in the above specified steps) and gives a string output of the text it found.
 
 <div align="center">
-<img src="Assets\Tesseract_Output.png" width=672px height=250px/> 
+<img src="Assets\Tesseract_Output.png" width=672px height=450px/> 
+<br>
+Figure 4: Tesseract Output
 <br>
 </div>
 
@@ -132,14 +137,27 @@ A mouse callback function is used to retrieve 4 points the user selects on the i
 A mouse callback function is used to retrieve 4 points the user selects on the image. These points are appended in a global array and are used to perform a warp perspective transform.
 
 <div align="center">
-<img src="Assets\Res_1.png" width=672px height=200px/> 
+<img src="Assets\Res_1.png" width=672px height=300px/> <br>
+Figure 5: Image sample with motion blur
 <br>
 </div>
 
+
 <div align="center">
-<img src="Assets\Res_1.png" width=672px height=200px/> 
+<img src="Assets\Res_1.png" width=672px height=300px/> 
+<br>
+Figure 6: Image sample with focus blur
 <br>
 </div>
+
+
+<div align="center">
+<img src="Assets\Res_1.png" width=672px height=300px/> 
+<br>
+Figure 7: Image sample with <br>handwritten text
+
+</div>
+
 
 ### Conclusion and Futher Work:
   * [x] The application program is able to handle computerised text as well as handwritten text for processing.
