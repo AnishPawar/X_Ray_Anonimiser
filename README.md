@@ -177,3 +177,7 @@ Figure 7: Image sample with <br>handwritten text
 ---
 
 <h3 align="center"><b>Developed by Anish Pawar and Chaitanya Bandiwdekar</b></h3>
+
+[![](https://img.shields.io/badge/LinkedIn-Anish_Pawar-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/anish-pawar-5300a9192/)
+
+[![](https://img.shields.io/badge/LinkedIn-Chaitanya_Bandiwdekar-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/chaitanya-bandiwdekar-11329a18a/)
