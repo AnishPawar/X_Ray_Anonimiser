@@ -1,6 +1,11 @@
 <h1 align="center">:hospital: X Ray Anonymiser :hospital:</h1>
 
 
+<div align="center">
+<img src="Assets\MIT-Private-Browsing_0.jpg" width=672px height=450px/> 
+<br>
+</div>
+
 
 
 [![](https://img.shields.io/badge/Made_with-Python-green?style=for-the-badge&logo=python)](https://www.python.org)
