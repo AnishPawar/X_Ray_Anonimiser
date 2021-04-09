@@ -72,7 +72,7 @@ def open_btn_clicked():
     global fig,file_list
     # plt.close(fig)
 
-    file_list = list(filedialog.askopenfilenames(initialdir="/Users/anishpawar/Robocon/Robocon_Anish/Matlab_IP/IP/Learning",title = "Select Image",filetypes=(("JPEG","*.jpg"),("PNG","*.png"),("all files","*.*"))))
+    file_list = list(filedialog.askopenfilenames(initialdir="/home/oxidane/Desktop/XRAY/X_Ray_Data_Detector-main/Omega_Testing",title = "Select Image",filetypes=(("JPEG","*.jpg"),("PNG","*.png"),("all files","*.*"))))
     # Name Pre-Processing 
     load_img(file_list)
 
@@ -96,13 +96,14 @@ def load_img(file_list):
 
     temp_img = cv2.cvtColor(og_img,cv2.COLOR_BGR2GRAY)
 
-    temp_img = blur_correction(og_img)
+    temp_img = blur_correction(temp_img)
 
     histogram = temp_img.ravel()
     if np.mean(histogram) <=120:
         temp_img = cv2.bitwise_not(temp_img)
     img_memory.append(og_img)
-    plot_new(og_img)
+    #plot_new(og_img)
+    plot_new(temp_img)
     
 def fliph_btn_clicked():
     plt.close()
