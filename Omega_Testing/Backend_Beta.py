@@ -37,13 +37,21 @@ def blur_correction(img):
     
     print(var)
 
-    if var < 500:
+    #if var < 500:
         
-        print("Going In....")
-        # Removing Lower Intensities 
-        ret,img = cv2.threshold(img,140,255,cv2.THRESH_BINARY_INV)
+        # print("Going In....")
+        # # Removing Lower Intensities 
+        # ret,img = cv2.threshold(img,120,255,cv2.THRESH_BINARY_INV)
+    img = cv2.GaussianBlur(img, (3,3), 0)
+    # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    # img = cv2.Laplacian(img, cv2.CV_64F)   
+    # img = cv2.Canny(img, 150, 220, )
+    # img = cv2.medianBlur(img, 5)
+    ret, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
-    return img    
+    return img
         
 
 def NLP(text):
@@ -57,7 +65,7 @@ def NLP(text):
         i = i.strip()
         
         a = i.replace('\n','')
-        a2 = "".join(re.findall("[a-zA-Z]+", a))
+        a2 = "".join(re.findall("[a-zA-Z0-9]+", a))
 
         if len(i) > 2:
             new.append(a2.capitalize())
@@ -66,13 +74,13 @@ def NLP(text):
     processed = " ".join(new)
 
     ne_tree = pos_tag(word_tokenize(processed))
-    # print(ne_tree)
+    print(ne_tree)
     names = []
 
     # Checking P-Noun Followed by P-Noun
     for c in range(len(ne_tree)):
 
-        if ((ne_tree[c-1][1] == "NNP") and (ne_tree[c][1] == "NNP")) or ((ne_tree[c-1][1] == "NNP") and (ne_tree[c][1] == "NN")) or ((ne_tree[c-1][1] == "NN") and (ne_tree[c][1] == "NNP")):
+        if ((ne_tree[c-1][1] == "NNP") and (ne_tree[c][1] == "NNP")) or ((ne_tree[c-1][1] == "NNP") and (ne_tree[c][1] == "NN")) or ((ne_tree[c-1][1] == "NN") and (ne_tree[c][1] == "NNP") or ne_tree[c][1] == "CD"):
             
             names.append(ne_tree[c-1][0])
             names.append(ne_tree[c][0])
@@ -119,23 +127,31 @@ def fuzzy_matching(text):
 
 
     if len(text) < 3 or pr.extractOne(text, body_part)[1] > 75: 
-        return ''
+        return 
+
+    if text.isalnum(): 
+        new_text.append(text)
+        return
 
     #Checking for first name
     for given in Fname_ds:
         if fz.ratio(text, given) > 60:
             # print(text, given, 1)
             new_text.append(text)
+            return
 
     #Checking for last name
     for given in Lname_ds:
         if fz.ratio(text, given) > 60:
             # print(text, given, 2)
             new_text.append(text)
+            return
 
     # blur_stat = 0
 
 def ocr_function(base,og):
+    s = '1234567890'
+
     global new_text,temp_list
     temp = base.copy()
 
@@ -146,6 +162,7 @@ def ocr_function(base,og):
     d = pytesseract.image_to_data(base,output_type=Output.DICT)
 
     processed_text = NLP(text)
+    print(processed_text)
 
     for name in processed_text:
         fuzzy_matching(name)
@@ -160,7 +177,9 @@ def ocr_function(base,og):
     for i in range(n_boxes):
 
         for c in new_text:
-            comp = "".join(re.findall("[a-zA-Z]+", d['text'][i].lower()))
+            comp = "".join(re.findall("[a-zA-Z0-9]+", d['text'][i].lower()))
+            # c1 = ''.join(x for x in c if not x.isdigit())
+            # print("HELLO -->", comp, '\n' , c, '\n')
 
             if  comp == c.lower():
 
