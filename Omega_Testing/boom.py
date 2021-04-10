@@ -14,7 +14,7 @@ cv2.setMouseCallback('frame',mouse)
 
    
 while True:
-    frame = cv2.imread("credimages/visa.png")
+    frame = cv2.imread("credimages/test33.png")
     # ret, frame = cap.read()     
     
     cv2.imshow('frame', frame)
