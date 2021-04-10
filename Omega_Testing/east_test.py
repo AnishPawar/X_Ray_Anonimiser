@@ -19,6 +19,6 @@ geometry = output[1]
 
 print(output)
 
-# [boxes, confidences] = decode(scores, geometry, 0.6)
+[boxes, confidences] = decode(scores, geometry, 0.6)
 
 # indices = cv2.dnn.NMSBoxesRotated(boxes, confidences, 0.6, nmsThreshold)
