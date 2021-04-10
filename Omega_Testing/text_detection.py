@@ -6,7 +6,7 @@ import pytesseract
 from matplotlib import pyplot as plt
 
 
-args = {"image":"/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/credimages/hilton-honors1.png", "east":"/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/frozen_east_text_detection.pb", "min_confidence":0.5, "width":640, "height":480}
+args = {"image":"/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/s.jpg", "east":"/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/frozen_east_text_detection.pb", "min_confidence":0.5, "width":640, "height":480}
 
 image = cv2.imread(args['image'])
 
@@ -127,7 +127,7 @@ for ((start_X, start_Y, end_X, end_Y), text) in results:
 	cv2.rectangle(orig_image, (start_X, start_Y), (end_X, end_Y),
 		(0, 0, 255), 2)
 	cv2.putText(orig_image, text, (start_X, start_Y),
-		cv2.FONT_HERSHEY_SIMPLEX, 2,(0,0, 255), 1)
+		cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0,0, 255), 1)
 
 cv2.imshow("OP",orig_image)
 cv2.waitKey(0)
