@@ -4,7 +4,7 @@ import numpy as np
 import pytesseract
 from pytesseract import Output
 
-img = cv2.imread("credimages/test66.jpg")
+img = cv2.imread("credimages/crop3.png")
 
 
 # img  = cv2.resize(img,(1920,1080))
@@ -43,11 +43,11 @@ cv2.imshow("Test111",closing)
 
 
 
-text = pytesseract.image_to_string(closing,lang='eng')
+text = pytesseract.image_to_string(img,lang='eng')
 text = text.lower()
 print(text)
 
-d = pytesseract.image_to_data(closing,output_type=Output.DICT)
+d = pytesseract.image_to_data(img,output_type=Output.DICT)
 
 n_boxes = len(d['text'])
 for i in range(n_boxes):

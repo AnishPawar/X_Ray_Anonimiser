@@ -6,7 +6,7 @@ import pytesseract
 from matplotlib import pyplot as plt
 
 
-args = {"image":"/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/credimages/test66.jpg", "east":"/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/frozen_east_text_detection.pb", "min_confidence":0.5, "width":640, "height":480}
+args = {"image":"/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/credimages/hilton-honors1.png", "east":"/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/frozen_east_text_detection.pb", "min_confidence":0.5, "width":640, "height":480}
 
 image = cv2.imread(args['image'])
 
