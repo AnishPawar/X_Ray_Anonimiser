@@ -64,7 +64,7 @@ for c in refCnts:
 rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3))
 sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
 
-image = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Test_Credit_Card/Images/test33.png")
+image = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Test_Credit_Card/Images/test55.jpg")
 org = image.copy()
 
 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -90,13 +90,6 @@ thresh = cv2.threshold(gradX, 0, 255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, sqKernel)
 
 kernel = np.ones((7,7))
-opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
-
-anded = cv2.bitwise_and(image,image,mask=opening)
-
-cv2.imshow("TT",anded)
-cv2.waitKey(0)
-
 cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                         cv2.CHAIN_APPROX_SIMPLE)
 cnts = cnts[1] if imutils.is_cv3() else cnts[0]
@@ -116,19 +109,15 @@ for c in cnts:
     r = org[startY:endY, startX:endX]
     r = cv2.bitwise_not(r)
 
-    # startX = int(startX * rW)
-	# startY = int(startY * rH)
-	# endX = int(endX * rW)
-	# endY = int(endY * rH)
-
-	#extract the region of interest
     rk = org[startY:endY, startX:endX]
+    # cv2.imshow("k",rk)
+    # cv2.waitKey(0)
 
 	#configuration setting to convert image to string.  
     configuration = ("-l eng --oem 1 --psm 8")
     ##This will recognize the text from the image of bounding box
     text = pytesseract.image_to_string(r, config=configuration)
-
+    print(text)
 	# append bbox coordinate and associated text to the list of results 
     results.append(((startX, startY, endX, endY), text))
 
