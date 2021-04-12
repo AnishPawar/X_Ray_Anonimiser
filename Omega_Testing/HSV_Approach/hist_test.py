@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 # from matplotlib import pyplot as plt
 
-img = cv2.imread('good_images/visa_platinum-min.png')
+img = cv2.imread('good_images/ecoin-wirex.png')
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 h, s, v = hsv[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
 

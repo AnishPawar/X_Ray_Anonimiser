@@ -5,13 +5,18 @@ from numpy.lib.type_check import imag
 import pytesseract
 from pytesseract import Output
 
-img = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/flood_fill/credimages/visa.png")
+img = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/flood_fill/credimages/hilton-honors1.png")
 
 
 # img  = cv2.resize(img,(1920,1080))
 lap = img.copy()
+
+go = img.copy()
+
 laplacian = cv2.Laplacian(img,cv2.CV_64F)
+laplacian = cv2.bitwise_not(laplacian)  
 cv2.imwrite("Laplacian.jpg",laplacian)
+
 
 test  = cv2.imread("Laplacian.jpg")
 
@@ -74,8 +79,9 @@ cv2.circle(img, seed1, 4, (0, 0, 0), cv2.FILLED, cv2.LINE_AA)
 
 img = cv2.bitwise_not(img)
 cv2.imshow("Test",img)
+cv2.imshow("Test11",test)
 # img = cv2.bitwise_not(img)
-cv2.imwrite("Laplacian.jpg",img)
+# cv2.imwrite("Laplacian.jpg",img)
 
 
 text = pytesseract.image_to_string(img,lang='eng')
