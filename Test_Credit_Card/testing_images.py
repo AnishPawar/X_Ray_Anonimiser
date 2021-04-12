@@ -1,9 +1,12 @@
+from tesseract_function import tesseacr_func
+from preprocessing import preprocess
 from imutils import contours
 import numpy as np
 import imutils
 import cv2
 import matplotlib.pyplot as plt
 import pytesseract
+
 
 # Digit Classifier
 def predict(model, X):
@@ -48,8 +51,6 @@ refCnts1 = contours.sort_contours(refCnts1, method="left-to-right")[0]
 
 
 digits = {}
-alphabets = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-
 i = 0
 for c in refCnts:
     (x, y, w, h) = cv2.boundingRect(c)
@@ -61,10 +62,9 @@ for c in refCnts:
  
 
 
-rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3))
-sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
 
-image = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Test_Credit_Card/Images/test55.jpg")
+
+image = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Test_Credit_Card/Images/test33.png")
 org = image.copy()
 
 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -73,71 +73,57 @@ gray_og = gray.copy()
 image = imutils.resize(image, width=300)
 
 aspect_ratio = org.shape[0]/image.shape[0]
-
-gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-
-tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, rectKernel)
-gradX = cv2.Sobel(tophat, ddepth=cv2.CV_32F, dx=1, dy=0, ksize=-1)
-gradX = np.absolute(gradX)
-(minVal, maxVal) = (np.min(gradX), np.max(gradX))
-gradX = (255 * ((gradX - minVal) / (maxVal - minVal)))
-gradX = gradX.astype("uint8")
-
-gradX = cv2.morphologyEx(gradX, cv2.MORPH_CLOSE, rectKernel)
-thresh = cv2.threshold(gradX, 0, 255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+gray,thresh = preprocess(image)
 
 
-thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, sqKernel)
-
-kernel = np.ones((7,7))
 cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                         cv2.CHAIN_APPROX_SIMPLE)
 cnts = cnts[1] if imutils.is_cv3() else cnts[0]
 
 
 locs = []
-results = []
+
 for c in cnts:
-
     (x, y, w, h) = cv2.boundingRect(c)
-    print(    (x, y, w, h))
-    
-    startX = int(x*aspect_ratio)
-    startY =int(y*aspect_ratio) 
-    endX = int((x+w)*aspect_ratio)
-    endY = int((y+h)*aspect_ratio)
-    r = org[startY:endY, startX:endX]
-    r = cv2.bitwise_not(r)
-
-    rk = org[startY:endY, startX:endX]
-    # cv2.imshow("k",rk)
-    # cv2.waitKey(0)
-
-	#configuration setting to convert image to string.  
-    configuration = ("-l eng --oem 1 --psm 8")
-    ##This will recognize the text from the image of bounding box
-    text = pytesseract.image_to_string(r, config=configuration)
-    print(text)
-	# append bbox coordinate and associated text to the list of results 
-    results.append(((startX, startY, endX, endY), text))
-
-
     # ar = w / float(h)
-
     # if  ar > 2.5 and ar < 4.5:
         # if  (int(w*aspect_ratio) > int(40*aspect_ratio) and int(w*aspect_ratio) < int(70*aspect_ratio)) and (int(h*aspect_ratio) > int(10*aspect_ratio) and int(h*aspect_ratio) < int(20*aspect_ratio)):
     locs.append((x, y, w, h))
 
-print("OP is")
+
+results = []
+kernel = np.ones((7,7))
+thresh1 = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+cnts = cv2.findContours(thresh1.copy(), cv2.RETR_EXTERNAL,
+                        cv2.CHAIN_APPROX_SIMPLE)
+cnts = cnts[1] if imutils.is_cv3() else cnts[0]
+for c in cnts:
+    (x, y, w, h) = cv2.boundingRect(c)
+
+    x =tesseacr_func(x,y,w,h,aspect_ratio,org)
+    print(x[0])
+    start_X = x[0]
+    start_Y = x[1]
+    end_X = x[2]
+    end_Y =x[3]
+    text= x[4]
+    # for start_X, start_Y, end_X, end_Y, text in x :
+
+    cv2.rectangle(org, (start_X, start_Y), (end_X, end_Y),
+        (0, 0, 255), 2)
+    cv2.putText(org, text, (start_X, start_Y),
+        cv2.FONT_HERSHEY_SIMPLEX, 2,(0,0, 255), 3)
+
+    results.append(x)
 print(results)
 
+	
 
 locs = sorted(locs, key=lambda x:x[0])  
 locs
 output = []
 for (i, (gX, gY, gW, gH)) in enumerate(locs):
     print(i,(gX, gY, gW, gH))
-
 
 for (gX, gY, gW, gH) in locs:
     print((gX, gY, gW, gH))
@@ -146,9 +132,6 @@ for (gX, gY, gW, gH) in locs:
     
     image_area = org.shape[0]*org.shape[1]
     group_area = group.shape[0]*group.shape[1]
-
-
-    print(image_area,group_area)
 
     Y1 = int((gY)*aspect_ratio)
     Y2 = int((gY + gH)*aspect_ratio)
@@ -189,4 +172,6 @@ for (gX, gY, gW, gH) in locs:
 
 print("Credit Card #: {}".format("".join(output)))
 plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+plt.show()
+plt.imshow(cv2.cvtColor(org, cv2.COLOR_BGR2RGB))
 plt.show()
