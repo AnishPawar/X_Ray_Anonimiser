@@ -59,12 +59,8 @@ for c in refCnts:
     print(digits)
     digits[i] = roi
     i+=1
- 
 
-
-
-
-image = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Test_Credit_Card/Images/test33.png")
+image = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Test_Credit_Card/Images/Test33.png")
 org = image.copy()
 
 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)

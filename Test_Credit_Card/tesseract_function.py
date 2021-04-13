@@ -12,8 +12,8 @@ def tesseacr_func(x,y,w,h,aspect_ratio,og_image):
     r = cv2.bitwise_not(r)
 
 
-    cv2.imshow("KK",r)
-    cv2.waitKey(0)
+    # cv2.imshow("KK",r)
+    # cv2.waitKey(0)
 
     configuration = ("-l eng --oem 1 --psm 8")
     text = pytesseract.image_to_string(r, config=configuration)
