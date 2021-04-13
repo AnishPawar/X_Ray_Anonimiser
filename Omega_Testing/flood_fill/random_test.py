@@ -28,8 +28,6 @@ test  = cv2.imread("Laplacian.jpg")
 gray = cv2.cvtColor(test, cv2.COLOR_BGR2GRAY)
 ret,thresh1 = cv2.threshold(gray,50,255,cv2.THRESH_BINARY)
 
-
-
 canny = cv2.Canny(test,150,200,3)
 
 anded = cv2.bitwise_and(test,test,mask=thresh1)

@@ -27,32 +27,113 @@ def image_parser(img):
     global image
     image = img
 
-def blur_correction(img):
-    # Checking for Blur
-    
-    aspect_ratio = img.shape[1]/img.shape[0]
-    height = int(500/aspect_ratio)
-    img_copy = cv2.resize(img,(500,height))
-    var = cv2.Laplacian(img_copy, cv2.CV_64F).var()    
-    
-    print(var)
+def preprocess(image):
+    rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3))
+    sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
 
-    #if var < 500:
-        
-        # print("Going In....")
-        # # Removing Lower Intensities 
-        # ret,img = cv2.threshold(img,120,255,cv2.THRESH_BINARY_INV)
-    img = cv2.GaussianBlur(img, (3,3), 0)
-    # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    
-    # img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
-    # img = cv2.Laplacian(img, cv2.CV_64F)   
-    # img = cv2.Canny(img, 150, 220, )
-    # img = cv2.medianBlur(img, 5)
-    ret, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
-    return img
+    tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, rectKernel)
+    gradX = cv2.Sobel(tophat, ddepth=cv2.CV_32F, dx=1, dy=0, ksize=-1)
+    gradX = np.absolute(gradX)
+    (minVal, maxVal) = (np.min(gradX), np.max(gradX))
+    gradX = (255 * ((gradX - minVal) / (maxVal - minVal)))
+    gradX = gradX.astype("uint8")
+
+    gradX = cv2.morphologyEx(gradX, cv2.MORPH_CLOSE, rectKernel)
+    thresh = cv2.threshold(gradX, 0, 255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+
+
+    thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, sqKernel)
+
+    return gray,thresh
+
+
+def tesseacr_func(x,y,w,h,aspect_ratio,og_image):
+    startX = int(x*aspect_ratio)
+    startY =int(y*aspect_ratio) 
+    endX = int((x+w)*aspect_ratio)
+    endY = int((y+h)*aspect_ratio)
+    r = og_image[startY:endY, startX:endX]
+    r = cv2.bitwise_not(r)
+
+    configuration = ("-l eng --oem 1 --psm 8")
+    text = pytesseract.image_to_string(r, config=configuration)
+    print(text)
+
+
+        d = pytesseract.image_to_data(base,output_type=Output.DICT)
+
+    processed_text = NLP(text)
+    print(processed_text)
+
+    for name in processed_text:
+        fuzzy_matching(name)
+    
+
+    if not new_text:
+        new_text = temp_list
         
+    # print(new_text)    
+
+    n_boxes = len(d['text'])
+    for i in range(n_boxes):
+
+        for c in new_text:
+            comp = "".join(re.findall("[a-zA-Z0-9]+", d['text'][i].lower()))
+            # c1 = ''.join(x for x in c if not x.isdigit())
+            # print("HELLO -->", comp, '\n' , c, '\n')
+
+            if  comp == c.lower():
+
+                (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
+                ocr_img = cv2.rectangle(og, (x, y), (x + w, y + h), (0, 0, 0), -1)
+
+    results = (startX, startY, endX, endY, text)
+    return results
+
+
+def ocr_function(base,og):
+    s = '1234567890'
+
+    global new_text,temp_list
+    temp = base.copy()
+
+    text = pytesseract.image_to_string(temp,lang='eng')
+    text = text.lower()
+    print(text)
+
+    d = pytesseract.image_to_data(base,output_type=Output.DICT)
+
+    processed_text = NLP(text)
+    print(processed_text)
+
+    for name in processed_text:
+        fuzzy_matching(name)
+    
+
+    if not new_text:
+        new_text = temp_list
+        
+    # print(new_text)    
+
+    n_boxes = len(d['text'])
+    for i in range(n_boxes):
+
+        for c in new_text:
+            comp = "".join(re.findall("[a-zA-Z0-9]+", d['text'][i].lower()))
+            # c1 = ''.join(x for x in c if not x.isdigit())
+            # print("HELLO -->", comp, '\n' , c, '\n')
+
+            if  comp == c.lower():
+
+                (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
+                ocr_img = cv2.rectangle(og, (x, y), (x + w, y + h), (0, 0, 0), -1)
+
+
+    # cv2.imshow('Processed',temp)
+    new_text = []
+    return(text,og)
 
 def NLP(text):
     global new_text,temp_list
@@ -69,8 +150,6 @@ def NLP(text):
 
         if len(i) > 2:
             new.append(a2.capitalize())
-
-    # print(new)
     processed = " ".join(new)
 
     ne_tree = pos_tag(word_tokenize(processed))
@@ -149,47 +228,7 @@ def fuzzy_matching(text):
 
     # blur_stat = 0
 
-def ocr_function(base,og):
-    s = '1234567890'
 
-    global new_text,temp_list
-    temp = base.copy()
-
-    text = pytesseract.image_to_string(temp,lang='eng')
-    text = text.lower()
-    print(text)
-
-    d = pytesseract.image_to_data(base,output_type=Output.DICT)
-
-    processed_text = NLP(text)
-    print(processed_text)
-
-    for name in processed_text:
-        fuzzy_matching(name)
-    
-
-    if not new_text:
-        new_text = temp_list
-        
-    # print(new_text)    
-
-    n_boxes = len(d['text'])
-    for i in range(n_boxes):
-
-        for c in new_text:
-            comp = "".join(re.findall("[a-zA-Z0-9]+", d['text'][i].lower()))
-            # c1 = ''.join(x for x in c if not x.isdigit())
-            # print("HELLO -->", comp, '\n' , c, '\n')
-
-            if  comp == c.lower():
-
-                (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
-                ocr_img = cv2.rectangle(og, (x, y), (x + w, y + h), (0, 0, 0), -1)
-
-
-    # cv2.imshow('Processed',temp)
-    new_text = []
-    return(text,og)
 
 def auto_crop(img):
     

@@ -1,3 +1,4 @@
+from re import X
 from tesseract_function import tesseacr_func
 from preprocessing import preprocess
 from imutils import contours
@@ -6,6 +7,7 @@ import imutils
 import cv2
 import matplotlib.pyplot as plt
 import pytesseract
+import re
 
 
 # Digit Classifier
@@ -56,11 +58,11 @@ for c in refCnts:
     (x, y, w, h) = cv2.boundingRect(c)
     roi = ref[y:(y + h), x:(x + w)]
     roi2 = cv2.resize(roi, (57, 88))
-    print(digits)
+    print(digits)   
     digits[i] = roi
     i+=1
 
-image = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Test_Credit_Card/Images/Test33.png")
+image = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Test_Credit_Card/Images/Test44.png")
 org = image.copy()
 
 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -83,7 +85,7 @@ for c in cnts:
     (x, y, w, h) = cv2.boundingRect(c)
     # ar = w / float(h)
     # if  ar > 2.5 and ar < 4.5:
-        # if  (int(w*aspect_ratio) > int(40*aspect_ratio) and int(w*aspect_ratio) < int(70*aspect_ratio)) and (int(h*aspect_ratio) > int(10*aspect_ratio) and int(h*aspect_ratio) < int(20*aspect_ratio)):
+
     locs.append((x, y, w, h))
 
 
@@ -96,21 +98,26 @@ cnts = cnts[1] if imutils.is_cv3() else cnts[0]
 for c in cnts:
     (x, y, w, h) = cv2.boundingRect(c)
 
-    x =tesseacr_func(x,y,w,h,aspect_ratio,org)
-    print(x[0])
-    start_X = x[0]
-    start_Y = x[1]
-    end_X = x[2]
-    end_Y =x[3]
-    text= x[4]
-    # for start_X, start_Y, end_X, end_Y, text in x :
+    if (int(image.shape[0]*0.75))<y:
 
-    cv2.rectangle(org, (start_X, start_Y), (end_X, end_Y),
-        (0, 0, 255), 2)
-    cv2.putText(org, text, (start_X, start_Y),
-        cv2.FONT_HERSHEY_SIMPLEX, 2,(0,0, 255), 3)
+        x =tesseacr_func(x,y,w,h,aspect_ratio,org)
 
-    results.append(x)
+        if x is not None:
+            print(x[0])
+            start_X = x[0]
+            start_Y = x[1]
+            end_X = x[2]
+            end_Y =x[3]
+            text= x[4]
+
+
+
+            cv2.rectangle(org, (start_X, start_Y), (end_X, end_Y),
+                (0, 0, 255), 2)
+            cv2.putText(org, text, (start_X, start_Y),
+                cv2.FONT_HERSHEY_SIMPLEX, 2,(0,0, 255), 3)
+
+            results.append(x)
 print(results)
 
 	
@@ -160,14 +167,13 @@ for (gX, gY, gW, gH) in locs:
                 scores.append(score)
             
             groupOutput.append(str(op[0]))
-            cv2.rectangle(image, (gX - 5, gY - 5),
-                        (gX + gW + 5, gY + gH + 5), (0, 0, 255), 2)
-            cv2.putText(image, "".join(groupOutput), (gX, gY - 15),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1) 
+            cv2.rectangle(org, (X1, Y1),
+                        (X2,Y2), (0, 0, 255), 2)
+            cv2.putText(org, "".join(groupOutput), (X1, Y1 - 15),
+                        cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3) 
         output.extend(groupOutput)
 
+
 print("Credit Card #: {}".format("".join(output)))
-plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-plt.show()
 plt.imshow(cv2.cvtColor(org, cv2.COLOR_BGR2RGB))
 plt.show()

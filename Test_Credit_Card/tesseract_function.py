@@ -1,6 +1,7 @@
 import pytesseract
 import cv2
 import numpy as np
+import re
 
 # results = []
 def tesseacr_func(x,y,w,h,aspect_ratio,og_image):
@@ -17,6 +18,12 @@ def tesseacr_func(x,y,w,h,aspect_ratio,og_image):
 
     configuration = ("-l eng --oem 1 --psm 8")
     text = pytesseract.image_to_string(r, config=configuration)
+    
+    text = "".join(re.findall("[a-zA-Z]+", text))
     print(text)
-    results = (startX, startY, endX, endY, text)
-    return results
+
+    if not text.islower():
+
+        results = (startX, startY, endX, endY, text)
+        return results
+    return

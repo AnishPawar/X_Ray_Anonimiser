@@ -96,7 +96,7 @@ def load_img(file_list):
 
     temp_img = cv2.cvtColor(og_img,cv2.COLOR_BGR2GRAY)
 
-    temp_img = blur_correction(temp_img)
+    # temp_img = blur_correction(temp_img)
 
     histogram = temp_img.ravel()
     if np.mean(histogram) <=120:
