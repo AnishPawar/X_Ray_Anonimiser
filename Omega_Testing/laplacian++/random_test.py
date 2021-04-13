@@ -5,12 +5,13 @@ from numpy.lib.type_check import imag
 import pytesseract
 from pytesseract import Output
 
-img = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/laplacian++/credimages/amex_gold-min.png")
+img = cv2.imread("/Users/anishpawar/GID_9_2021/X_Ray_Anonimiser/Omega_Testing/laplacian++/credimages/visa.png")
 
 
 # img  = cv2.resize(img,(1920,1080))
 lap = img.copy()
 laplacian = cv2.Laplacian(img,cv2.CV_64F)
+# laplacian = cv2.bitwise_not(laplacian) 
 cv2.imwrite("Laplacian.jpg",laplacian)
 
 test  = cv2.imread("Laplacian.jpg")
@@ -29,14 +30,14 @@ canny = cv2.Canny(test,150,200,3)
 kernel1 = np.ones((3,3))
 
 
-anded = cv2.bitwise_and(test,opening,mask=thresh1)
+# anded = cv2.bitwise_and(test,opening,mask=thresh1)
 
 contours,_ = cv2.findContours(canny,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
 cv2.drawContours(test, contours, -1, (0, 0, 0), 9)
 closing = cv2.morphologyEx(test, cv2.MORPH_CLOSE, kernel)
 
-cv2.imshow("Test",thresh1)
-cv2.imwrite("Laplacian.jpg",thresh1)
+# cv2.imshow("Test",thresh1)
+# cv2.imwrite("Laplacian.jpg",thresh1)
 
 text = pytesseract.image_to_string(thresh1,lang='eng')
 text = text.lower()

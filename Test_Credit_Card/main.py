@@ -91,6 +91,8 @@ for c in cnts:
 results = []
 kernel = np.ones((7,7))
 thresh1 = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+# cv2.imshow("kk",thresh1)
+# cv2.waitKey(0)
 cnts = cv2.findContours(thresh1.copy(), cv2.RETR_EXTERNAL,
                         cv2.CHAIN_APPROX_SIMPLE)
 cnts = cnts[1] if imutils.is_cv3() else cnts[0]
