@@ -19,4 +19,7 @@ def preprocess(image):
 
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, sqKernel)
 
+    cv2.imshow("KK",thresh)
+    cv2.waitKey(0)
+
     return gray,thresh
